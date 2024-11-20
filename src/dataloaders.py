@@ -25,3 +25,15 @@ def load_zones_arrets() -> pd.DataFrame:
     bucket = "dlb-hackathon"
     file_key = "equipe-10/zones-d-arrets.parquet"
     return load_parquet_from_s3(bucket, file_key)
+
+
+def load_referentiel_lignes() -> pd.DataFrame:
+    bucket = "dlb-hackathon"
+    file_key = "equipe-10/referentiel-des-lignes.parquet"
+    return load_parquet_from_s3(bucket, file_key)
+
+
+def load_arrets_et_lignes_associes() -> pd.DataFrame:
+    bucket = "dlb-hackathon"
+    file_key = "equipe-10/arrets-lignes.parquet"
+    return load_parquet_from_s3(bucket, file_key)
