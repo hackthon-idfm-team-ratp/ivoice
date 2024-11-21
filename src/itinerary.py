@@ -33,13 +33,13 @@ def basic_itinerary(start_station_id: str, end_station_id: str, departure_time: 
 def itinerary_with_line_exclusion(start_station_id: str, end_station_id: str, departure_time: datetime, excluded_line_id: str) -> dict:
     start_station_pos = get_station_pos(start_station_id)
     end_station_pos = get_station_pos(end_station_id)
-    forbidden_uri = f"{API_URL}/lines?id={excluded_line_id}"
+    forbidden_uri = f"line:{excluded_line_id}"
 
     parameters = {
         "from": ";".join(start_station_pos),
         "to": ";".join(end_station_pos),
         "datetime": departure_time,
-        "forbidden_uri": forbidden_uri,
+        "forbidden_uris[]": forbidden_uri,
     }
     response = requests.get(url=f"{API_URL}/journeys", params=parameters, headers={"apiKey": os.environ["IDFM_API_KEY"]})
 
@@ -47,8 +47,8 @@ def itinerary_with_line_exclusion(start_station_id: str, end_station_id: str, de
 
 if __name__ == "__main__":
     load_dotenv(override=True)
-    print(get_station_pos("IDFM:490900"))
-    print(get_station_pos("IDFM:37539"))
+    # print(get_station_pos("IDFM:490900"))
+    # print(get_station_pos("IDFM:37539"))
     # itin = basic_itinerary("IDFM:490900", "IDFM:37539", "20241211T1215")
     itin = itinerary_with_line_exclusion("IDFM:490900", "IDFM:37539", "20241211T1215", "IDFM:C01374")
     import json
