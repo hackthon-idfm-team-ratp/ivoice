@@ -34,3 +34,12 @@ class Itinerary:
             ))
 
         return Itinerary(itinerary_type, routes)
+
+        
+@dataclass
+class Disruption:
+    period_begin: str
+    status: str
+    severity: str
+    message: str
+    line_id: str
