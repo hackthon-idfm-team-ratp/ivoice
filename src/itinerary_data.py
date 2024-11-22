@@ -32,10 +32,12 @@ class Itinerary:
                 end=section["to"]["stop_point"]["name"] if "stop_point" in section["to"] else destination_name,
                 line=line
             ))
+            # Quick hack to return only the first route
+            break
 
         return Itinerary(itinerary_type, routes)
 
-        
+
 @dataclass
 class Disruption:
     period_begin: str

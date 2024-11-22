@@ -26,40 +26,54 @@ def generate_messages(trajets_alternatifs: dict, infos_incident: str, ligne_inci
 
     # Prompt pour le LLM
     template = f"""
-    Ta mission est d'informer et de rassurer de manière concise, précise, exhaustive, polie et joyeuse.
+    Ta mission est de générer des messages personnalisés pour chacune des stations d'une ligne de métro perturbée.
+    Ces messages doivent informer et rassurer.
 
-    Tu commences par énoncer la nature de l'incident et la station qui est touchée. Par exemple :
-    Bonjour chers voyageurs, un bagage oublié demande l'intervention d'une équipe spécialisée. La ligne 9 est bloquée entre les stations Belle Vue et Pouvoir pendant un temps indéterminé.
+    Pour générer ces messages tu t'appuieras exclusivement sur les données suivantes:
+
+    Le message d'incident: {infos_incident}
+    La ligne impactée par l'incident: {ligne_incident}
+    Les itinéraires alternatifs proposés pour chacun des stations de la ligne: {trajets_alternatifs}
+
+    Pour chaque message tu commences par énoncer la nature de l'incident et la station qui est touchée. Par exemple :
+    Si le message incident est "Métro 9 : Bagage oublié sur un quai - Trafic interrompu"
+    Et que la ligne impactée est "Métro 9"
+    Tu écriras: "Bonjour chers voyageurs, le trafic est interrompu sur la ligne 9 suite à un bagage oublié sur un quai."
 
     Puis, rassure-les en indiquant que tu vas les aider à trouver le meilleur itinéraire. Par exemple :
     Nous sommes désolés pour cet incident, mais nous sommes là pour vous guider jusqu’à votre destination.
 
     Situe dans quelle station les voyageurs se trouvent. Par exemple :
-    Vous êtes actuellement à la station Démocrate de la ligne 9. Voici les itinéraires possibles selon votre destination.
+    Si la station actuellement traitée est "Pont de Sèvres"
+    Vous êtes actuellement à la station Pont de Sèvres de la ligne 9. Voici les itinéraires possibles selon votre destination.
 
     Maintenant, tu vas expliquer, itinéraire par itinéraire, comment se déplacer. Tu vas utiliser la même structure d'explication pour chacun d’eux.
 
     Énonce la direction de l’itinéraire pour les voyageurs concernés. Par exemple :
-    Pour tous les voyageurs en direction du Nord-Ouest de Paris.
+    Si le itinerary_type dans l'itinéraire alternatif est: Nord-Ouest de Paris
+    Tu écriras: Pour tous les voyageurs en direction du Nord-Ouest de Paris.
 
     Énonce la station et le numéro de ligne recommandé. Par exemple :
-    Empruntez la ligne 1 à la station Démocrate jusqu'à la station Balna.
+    Si la route de l'itinéraire alternatif est: {{"start": "Pont de Sèvres", "end": "Marcel Sembat", "ligne": "Métro 9"}}
+    Empruntez la ligne 9 pour rejoindre la station Marcel Sembat.
 
-    Pour générer ces itinéraires, utilise les données suivantes :
-    - informations incident: {infos_incident}
-    - ligne impacté : {ligne_incident}
-    - liste des trajets alternatifs par station : {trajets_alternatifs}
-
-    Fournis les résultats au format JSON, avec comme clé la station, et comme la valeur le message qui lui est destiné. Par exemple :
-    {{"Démocrate" : "Bonjour chers voyageurs, un bagage oublié demande l'intervention d'une équipe spécialisée. La ligne 9 est bloquée entre les stations Belle Vue et Pouvoir pendant un temps indéterminé. Vous êtes actuellement à la station Démocrate. Voici les itinéraires possibles selon votre destination. Pour tous les voyageurs en direction du Nord-Ouest de Paris. Emprunter la ligne 9 en rejoignant la station Balna."}}
-
+    Fournis les résultats au format JSON, avec comme clés toutes les stations et comme valeur le message qui lui est destiné.
     """
+    #     {{"Démocrate" : "Bonjour chers voyageurs, un bagage oublié demande l'intervention d'une équipe spécialisée. La ligne 9 est bloquée entre les stations Belle Vue et Pouvoir pendant un temps indéterminé. Vous êtes actuellement à la station Démocrate. Voici les itinéraires possibles selon votre destination. Pour tous les voyageurs en direction du Nord-Ouest de Paris. Emprunter la ligne 9 en rejoignant la station Balna."}}
 
     llm_var = llm([HumanMessage(content=template)])
 
     json_content = llm_var.content.strip("```json").strip("```")
     print(json_content)
-    result = json.loads(json_content)
+
+    try:
+        result = json.loads(json_content)
+    except:
+        fix_prompt = f"The folloxing JSON string is invalid, fix it and return it as valid JSON: {json_content}"
+        fixed_json = llm([HumanMessage(content=fix_prompt)])
+        result = json.loads(fixed_json)
+
+
 
     return result
 
