@@ -3,7 +3,7 @@ import random
 import pandas as pd
 
 def create_disruption():
-    csv_path = 'historique_disruptions_2024_ligne9.csv'
+    csv_path = './Caspar/historique_disruptions_2024.csv'
     df = pd.read_csv(csv_path)
     df_metro_9 = df[df['impacted_objects_pt_object_name'] == 'RATP Métro 9']
     df_metro_9_noservice = df_metro_9[df_metro_9['severity.effect'] == 'NO_SERVICE']
