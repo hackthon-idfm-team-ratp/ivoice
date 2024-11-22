@@ -73,8 +73,6 @@ def generate_messages(trajets_alternatifs: dict, infos_incident: str, ligne_inci
         fixed_json = llm([HumanMessage(content=fix_prompt)])
         result = json.loads(fixed_json)
 
-
-
     return result
 
 if __name__ == "__main__":
