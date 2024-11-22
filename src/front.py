@@ -6,6 +6,7 @@ from itinerary_data import Itinerary
 from dataclasses import asdict
 from langchain_openai import generate_messages
 from dotenv import load_dotenv
+import front_map
 
 load_dotenv(override=True)
 
@@ -48,6 +49,11 @@ def print_messages(messages: dict[str, str]):
         result = f"{key}: {messages.get(key)}"
         st.write(result)
 
+def print_map(messages):
+    # map_dictionnary doit être l'output de message_generation
+    map_dictionnary = messages
+    st.components.v1.html(front_map.create_map(map_dictionnary), scrolling=True, height=500)
+
 
 def print_results():
     infos_incident = generation_incident()
@@ -55,6 +61,7 @@ def print_results():
     itinerary = loading_itineraire()
     st.write("\n")
     messages = loading_message(itinerary, infos_incident)
+    print_map(messages)
     st.write("\n")
     print_messages(messages)
 
