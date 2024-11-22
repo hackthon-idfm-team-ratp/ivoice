@@ -37,7 +37,7 @@ def create_map(messages_dict):
         message_voyageur = messages_dict.get(station)
     
     
-        popup_content = f"<b>{station}</b><br>{message_voyageur}"
+        popup_content = f"""<div style="font-size:16px;"><b style="color:blue; font-size:20px;">{station}</b><br><span style="font-size:18px;">{message_voyageur}</span></div>"""
     
     
         folium.Marker([lat, lon], popup=folium.Popup(popup_content, max_width=400, min_width=200)).add_to(carto)
