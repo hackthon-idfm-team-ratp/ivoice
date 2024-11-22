@@ -23,7 +23,7 @@ def itineraire_generation():
 
 def generation_incident():
     result = disruption_generation.create_disruption()
-    st.write(result.message)
+    st.markdown(result.message, unsafe_allow_html=True)
 
 def loading_itineraire():
     with st.spinner("Génération de l'itinéraire:"):
