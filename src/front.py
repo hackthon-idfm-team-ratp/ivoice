@@ -4,24 +4,23 @@ import time
 from itinerary_calculator import ItineraryCalculator
 from itinerary_data import Itinerary
 from dataclasses import asdict
+from langchain_openai import generate_messages
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 st.markdown("###")
 
 st.title("IVoice")
 
-### Fake functions:
-def message_generation(itineraries: dict[str, list[Itinerary]]):
-    it_dict = {k: [asdict(it) for it in v] for k, v in itineraries.items()}
-    time.sleep(3)
-    dico = {
-        'Pont de sèvres': 'Prenez la ligne 8 pour aller à République',
-        'Réaumur-Sébastopol': "Pour aller vers l'ouest prenez la 3",
-        "Nation": "Pour aller vers l'ouest prenez la 1 vers l'ouest"
-    }
-    return dico
-
-
 ###
+
+def message_generation(itineraries: dict[str, list[Itinerary]], infos_incident: str):
+    it_dict = {k: [asdict(it) for it in v] for k, v in itineraries.items()}
+    messages = generate_messages(it_dict, infos_incident, "Métro 9")
+    return messages
+
+
 def itineraire_generation():
     it_calc = ItineraryCalculator()
     itineraries = it_calc.compute_alternate_itineraries(line_id="IDFM:C01379")
@@ -30,6 +29,7 @@ def itineraire_generation():
 def generation_incident():
     result = disruption_generation.create_disruption()
     st.markdown(result.message, unsafe_allow_html=True)
+    return result.message
 
 def loading_itineraire() -> dict[str, list[Itinerary]]:
     with st.spinner("Génération de l'itinéraire:"):
@@ -37,9 +37,9 @@ def loading_itineraire() -> dict[str, list[Itinerary]]:
     st.success("Itinéraire généré !")
     return itinerary
 
-def loading_message(itinerary: dict[str, list[Itinerary]]) -> dict[str, str]:
+def loading_message(itinerary: dict[str, list[Itinerary]], infos_incident: str) -> dict[str, str]:
     with st.spinner("Génération du message"):
-        messages = message_generation(itinerary)
+        messages = message_generation(itinerary, infos_incident)
     st.success("Message généré !")
     return messages
 
@@ -50,11 +50,11 @@ def print_messages(messages: dict[str, str]):
 
 
 def print_results():
-    generation_incident()
+    infos_incident = generation_incident()
     st.write("\n")
     itinerary = loading_itineraire()
     st.write("\n")
-    messages = loading_message(itinerary)
+    messages = loading_message(itinerary, infos_incident)
     st.write("\n")
     print_messages(messages)
 
